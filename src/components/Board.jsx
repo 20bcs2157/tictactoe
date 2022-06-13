@@ -1,26 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Square from './Square';
 
-const Board = () => {
-  const [board, setboard] = useState(Array(9).fill(null));
-  const [isXNet, setIsXNet] = useState(false);
-
-  const handleSquareclick = position => {
-    if (board[position]) {
-      return;
-    }
-
-    setboard(prev => {
-      return prev.map((Square, pos) => {
-        if (pos === position) {
-          return isXNet ? 'X' : '0';
-        }
-        return Square;
-      });
-    });
-    setIsXNet(prev => !prev);
-  };
-
+const Board = ({ board, handleSquareclick }) => {
   const renderSquare = position => {
     return (
       <Square
