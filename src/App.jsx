@@ -1,40 +1,49 @@
 import React, { useState } from 'react';
 import Board from './components/Board';
+import Square from './components/Square';
 import { calculateWinner } from './styles/helper';
 
 import './styles/root.scss';
 
 const app = () => {
-  const [board, setboard] = useState(Array(9).fill(null));
-  const [isXNet, setIsXNet] = useState(false);
+  const [history, sethistory] = useState([
+    { board: Array(9).fill(null), isXNet: true },
+  ]);
+  const [currentMove, setcurrentMove] = useState(0);
 
-  const winner = calculateWinner(board);
+  const current = history[currentMove];
+
+  const winner = calculateWinner(current.board);
 
   const message = winner
     ? `winner is ${winner}`
-    : `next player is ${isXNet ? 'X' : '0'}`;
+    : `next player is ${current.isXNet ? 'X' : '0'}`;
 
   const handleSquareclick = position => {
-    if (board[position] || winner) {
+    if (current.board[position] || winner) {
       return;
     }
 
-    setboard(prev => {
-      return prev.map((Square, pos) => {
+    sethistory(prev => {
+      const last = prev[prev.length - 1];
+
+      const newboard = last.board.map((Square, pos) => {
         if (pos === position) {
-          return isXNet ? 'X' : '0';
+          return last.isXNet ? 'X' : '0';
         }
         return Square;
       });
+
+      return prev.concat({ board: newboard, isXNet: !last.isXNet });
     });
-    setIsXNet(prev => !prev);
+    setcurrentMove(prev => prev + 1);
   };
 
   return (
     <div className="app">
       <h1>TIC TAC TOE!</h1>
       <h2>{message}</h2>
-      <Board board={board} handleSquareclick={handleSquareclick} />
+      <Board board={current.board} handleSquareclick={handleSquareclick} />
     </div>
   );
 };
